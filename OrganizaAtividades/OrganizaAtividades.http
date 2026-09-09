@@ -1,0 +1,16 @@
+@OrganizaAtividades_HostAddress = https://localhost:7226
+
+GET {{OrganizaAtividades_HostAddress}}/api/atividades
+Accept: application/json
+
+###
+
+GET {{OrganizaAtividades_HostAddress}}/api/atividades/1
+Accept: application/json
+
+###
+
+GET {{OrganizaAtividades_HostAddress}}/api/atividades/28
+Accept: application/json
+
+###
