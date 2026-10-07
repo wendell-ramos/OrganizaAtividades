@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OrganizaAtividades.Models;
+using OrganizaAtividades.DTOS.Atividade;
+using OrganizaAtividades.DTOS.Validation;
+using OrganizaAtividades.Services;
 
 namespace OrganizaAtividades.Controllers
 {
@@ -7,61 +9,108 @@ namespace OrganizaAtividades.Controllers
     [ApiController]
     public class AtividadesController : ControllerBase
     {
-        private static List<Atividade> _atividades = new List<Atividade>()
+        private readonly IAtividadeService _service;
+
+        public AtividadesController(IAtividadeService service)
         {
-            new Atividade
-            {
-                Id = 1,
-                Titulo = "Projeto de API REST",
-                Descricao = "Desenvolver o primeiro checkpoint da API",
-                DataEntrega = new DateTime(2026, 9, 30),
-                Prioridade = "Alta",
-                Situacao = "Em andamento",
-                DataConclusao = null,
-                DisciplinaId = 1,
-                CategoriaId = 1
-            },
-            new Atividade
-            {
-                Id = 2,
-                Titulo = "Exercícios de modelagem",
-                Descricao = "Finalizar os exercícios de banco de dados",
-                DataEntrega = new DateTime(2026, 10, 10),
-                Prioridade = "Média",
-                Situacao = "Pendente",
-                DataConclusao = null,
-                DisciplinaId = 2,
-                CategoriaId = 1
-            },
-            new Atividade
-            {
-                Id = 3,
-                Titulo = "Prova de banco de dados",
-                Descricao = "Revisar o conteúdo para a avaliação",
-                DataEntrega = new DateTime(2026, 10, 20),
-                Prioridade = "Alta",
-                Situacao = "Pendente",
-                DataConclusao = null,
-                DisciplinaId = 2,
-                CategoriaId = 2
-            }
-        };
+            _service = service;
+        }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Listar(
+            [FromQuery] AtividadeFilterDTO filtro)
         {
-            return Ok(_atividades);
+            var atividades = await _service.ListarAsync(filtro);
+
+            return Ok(atividades);
         }
+
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var atividade = _atividades.FirstOrDefault(a => a.Id == id);
+            var atividade = await _service.BuscarPorIdAsync(id);
 
             if (atividade == null)
             {
+                return NotFound(new ErroResponseDTO
+                {
+                    StatusCode = StatusCodes.Status404NotFound,
+                    Mensagem = "Atividade não encontrada."
+                });
+            }
+
+            return Ok(atividade);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(
+            [FromBody] AtividadeCreateDTO atividade)
+        {
+            try
+            {
+                var atividadeResponseDTO =
+                    await _service.CadastrarAsync(atividade);
+
+                return CreatedAtAction(
+                    nameof(GetById),
+                    new { id = atividadeResponseDTO.Id },
+                    atividadeResponseDTO
+                );
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ErroResponseDTO
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Mensagem = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Alterar(
+            int id,
+            [FromBody] AtividadeUpdateDTO atividadeAtualizada)
+        {
+            try
+            {
+                var atividade = await _service.AlterarAsync(
+                    id,
+                    atividadeAtualizada
+                );
+
+                if (atividade == null)
+                {
+                    return NotFound(new ErroResponseDTO
+                    {
+                        StatusCode = StatusCodes.Status404NotFound,
+                        Mensagem = "Atividade não encontrada."
+                    });
+                }
+
+                return Ok(atividade);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new ErroResponseDTO
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Mensagem = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Excluir(int id)
+        {
+            var excluiu = await _service.ExcluirAsync(id);
+
+            if (!excluiu)
+            {
                 return NotFound();
             }
-            return Ok(atividade);
+
+            return NoContent();
         }
     }
 }
