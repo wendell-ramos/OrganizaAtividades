@@ -9,6 +9,7 @@ API REST desenvolvida em ASP.NET Core para organizar atividades acadêmicas. Cad
 - .NET 8
 - Entity Framework Core
 - SQL Server LocalDB
+- Autenticação JWT
 - Swagger
 - Insomnia
 
@@ -22,7 +23,10 @@ API REST desenvolvida em ASP.NET Core para organizar atividades acadêmicas. Cad
 - Validação dos dados enviados
 - Validação da existência de disciplinas e categorias relacionadas
 - Tratamento de registros duplicados e não encontrados
-- Respostas HTTP `200`, `201`, `204`, `400` e `404`
+- Login e validação de credenciais
+- Geração e validação de token JWT
+- Autorização pelos perfis `Administrador` e `Usuario`
+- Respostas HTTP `200`, `201`, `204`, `400`, `401`, `403` e `404`
 
 ## Banco de dados
 
@@ -40,7 +44,8 @@ Update-Database
 2. Confirme que o SQL Server LocalDB está instalado e disponível.
 3. Execute o comando `Update-Database` no Console do Gerenciador de Pacotes.
 4. Inicie o projeto.
-5. Teste os endpoints pelo Swagger ou pelo Insomnia.
+5. Faça o login para obter um token JWT.
+6. Teste os endpoints pelo Swagger ou pelo Insomnia.
 
 Durante o desenvolvimento, a API foi testada no endereço:
 
@@ -49,6 +54,22 @@ https://localhost:7226
 ```
 
 ## Endpoints
+
+### Autenticação
+
+```http
+POST /api/auth/login
+GET  /api/auth/me
+```
+
+O endpoint de login retorna um token JWT. As consultas são públicas, as operações de criação e alteração exigem autenticação e as exclusões são permitidas somente para o perfil `Administrador`.
+
+Usuários criados automaticamente para os testes:
+
+```text
+Administrador: admin@organiza.com / Admin@123
+Usuário:       usuario@organiza.com / Usuario@123
+```
 
 ### Disciplinas
 
