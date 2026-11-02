@@ -1,4 +1,31 @@
 @OrganizaAtividades_HostAddress = https://localhost:7226
+@token = COLE_AQUI_O_TOKEN_RETORNADO_PELO_LOGIN
+
+POST {{OrganizaAtividades_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@organiza.com",
+  "senha": "Admin@123"
+}
+
+###
+
+POST {{OrganizaAtividades_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@organiza.com",
+  "senha": "Usuario@123"
+}
+
+###
+
+GET {{OrganizaAtividades_HostAddress}}/api/auth/me
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
 
 GET {{OrganizaAtividades_HostAddress}}/api/atividades
 Accept: application/json
@@ -12,5 +39,10 @@ Accept: application/json
 
 GET {{OrganizaAtividades_HostAddress}}/api/atividades/28
 Accept: application/json
+
+###
+
+DELETE {{OrganizaAtividades_HostAddress}}/api/atividades/999999
+Authorization: Bearer {{token}}
 
 ###

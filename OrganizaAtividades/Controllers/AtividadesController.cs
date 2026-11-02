@@ -2,6 +2,8 @@
 using OrganizaAtividades.DTOS.Atividade;
 using OrganizaAtividades.DTOS.Validation;
 using OrganizaAtividades.Services;
+using Microsoft.AspNetCore.Authorization;
+using OrganizaAtividades.Security;
 
 namespace OrganizaAtividades.Controllers
 {
@@ -17,6 +19,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Listar(
             [FromQuery] AtividadeFilterDTO filtro)
         {
@@ -26,6 +29,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var atividade = await _service.BuscarPorIdAsync(id);
@@ -43,6 +47,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post(
             [FromBody] AtividadeCreateDTO atividade)
         {
@@ -68,6 +73,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Alterar(
             int id,
             [FromBody] AtividadeUpdateDTO atividadeAtualizada)
@@ -101,6 +107,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Perfis.Administrador)]
         public async Task<IActionResult> Excluir(int id)
         {
             var excluiu = await _service.ExcluirAsync(id);

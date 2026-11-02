@@ -2,6 +2,8 @@
 using OrganizaAtividades.DTOS.Categoria;
 using OrganizaAtividades.DTOS.Validation;
 using OrganizaAtividades.Services;
+using Microsoft.AspNetCore.Authorization;
+using OrganizaAtividades.Security;
 
 namespace OrganizaAtividades.Controllers
 {
@@ -17,6 +19,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Listar()
         {
             var categorias = await _service.ListarAsync();
@@ -25,6 +28,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var categoria = await _service.BuscarPorIdAsync(id);
@@ -42,6 +46,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post(
             [FromBody] CategoriaCreateDTO categoria)
         {
@@ -67,6 +72,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Alterar(
             int id,
             [FromBody] CategoriaUpdateDTO categoriaAtualizada)
@@ -100,6 +106,7 @@ namespace OrganizaAtividades.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = Perfis.Administrador)]
         public async Task<IActionResult> Excluir(int id)
         {
             var excluiu = await _service.ExcluirAsync(id);

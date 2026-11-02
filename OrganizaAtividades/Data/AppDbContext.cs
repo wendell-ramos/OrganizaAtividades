@@ -16,6 +16,10 @@ namespace OrganizaAtividades.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Usuario>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
             modelBuilder.Entity<Atividade>()
                 .HasOne(a => a.Disciplina)
                 .WithMany(d => d.Atividades)
@@ -30,5 +34,6 @@ namespace OrganizaAtividades.Data
         public DbSet<Atividade> Atividades { get; set; }
         public DbSet<Disciplina> Disciplinas { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
     }
 }
